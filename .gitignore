@@ -1,0 +1,7 @@
+.vs/
+Release/
+Debug/
+Raytracer/Debug/
+Raytracer/Release/
+Raytracer/freeglut-3.2.1/
+Raytracer/test.ppm
