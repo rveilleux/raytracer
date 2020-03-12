@@ -1,8 +1,9 @@
 #pragma once
-#include <vector>
 #include "Color.h"
-#include "PPM.h"
 #include "Dynarray.h"
+
+class PPM;
+class PPMBinary;
 
 class Canvas
 {

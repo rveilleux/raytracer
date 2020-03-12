@@ -1,5 +1,6 @@
 #pragma once
-#include "Utils.h"
+#include "Strings.h"
+#include "Dynarray.h"
 #include "Color.h"
 
 class PPMBase

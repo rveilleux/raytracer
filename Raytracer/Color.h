@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 #include "Tuple.h"
 
 class Color : public Tuple
@@ -33,9 +34,6 @@ public:
 	friend Color operator-(const Color& lhs, const Color& rhs) {
 		return { lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z };
 	}
-	std::string RedByteString() const { return std::to_string(Color::DoubleToByte(x)); }
-	std::string GreenByteString() const { return std::to_string(Color::DoubleToByte(y)); }
-	std::string BlueByteString() const { return std::to_string(Color::DoubleToByte(z)); }
 	static const Color White;
 	static const Color Black;
 };

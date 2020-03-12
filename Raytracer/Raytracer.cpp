@@ -17,6 +17,8 @@
 #include "GradientPattern.h"
 #include "RingPattern.h"
 #include "CheckerPattern.h"
+#include "TupleString.h"
+#include "JitterPattern.h"
 
 // For 100x50 in Render::Test
 // Allocation depth: Release: 30, Debug: 35
@@ -118,7 +120,7 @@ public:
 		do {
 			canvas.WritePixel(p.position.x, 19 - p.position.y, Color(255, 255, 0));
 			p = Tick(e, p);
-			std::cout << "Step " << countStep << " pos=" << p.position.ToString() << std::endl;
+			std::cout << "Step " << countStep << " pos=" << TupleToString(p.position) << std::endl;
 			countStep++;
 		} while (p.position.y > 0);
 		canvas.SaveToFile("test.ppm");
@@ -157,6 +159,8 @@ public:
 		floorMat->specular = 0;
 		//floorMat->pattern = std::make_unique<StripePattern>(Color(1, 0.9, 0.9), Color(0.2, 0.2, 0.2));
 		floorMat->pattern = std::make_unique<CheckerPattern>(Color(1, 0.9, 0.9), Color(0.2, 0.2, 0.2));
+		// mini-offset of 0.01 to prevent the checker pattern to be noisy due to floating point imprecision
+		floorMat->pattern->SetTransform(Translation({ 0.01, 0.01, 0.01 }));
 		floor->SetMaterial(floorMat);
 
 		//auto leftWall = std::make_unique<Sphere>();
@@ -166,7 +170,7 @@ public:
 		//	RotationX(M_PI / 2)*
 		//	Scaling({ 10, 0.01, 10 }));
 		auto leftWall = std::make_unique<Plane>();
-		leftWall->SetTransform(Translation({ 0,0,10 }) * RotationX(M_PI / 2));
+		leftWall->SetTransform(Translation({ 0, 0, 10 }) * RotationX(M_PI / 2));
 		leftWall->SetMaterial(floorMat);
 
 		//auto rightWall = std::make_unique<Sphere>();
@@ -184,8 +188,9 @@ public:
 		middleMat->diffuse = 0.7;
 		middleMat->specular = 0.3;
 		//middleMat->pattern = std::make_unique<StripePattern>(Color(0.1, 1, 0.5), Color(0.9, 0.8, 0.2));
-		middleMat->pattern = std::make_unique<TestPattern>();
-		middleMat->pattern->SetTransform(Scaling({ 0.4, 0.4, 0.4 }) * RotationY(M_PI / 4));
+		auto ringPattern = std::make_unique<RingPattern>(Color(0.1, 1, 0.5), Color(0.9, 0.8, 0.2));
+		middleMat->pattern = std::make_unique<JitterPattern>(std::move(ringPattern));
+		middleMat->pattern->SetTransform(Scaling({ 0.2, 0.2, 0.2 }) * RotationY(M_PI / 4));
 		middle->SetMaterial(middleMat);
 
 		auto right = std::make_unique<Sphere>();

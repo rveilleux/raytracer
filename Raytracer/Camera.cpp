@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "Thread.h"
+#include "World.h"
 #include <iostream>
 #include <thread>
 

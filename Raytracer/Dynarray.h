@@ -39,3 +39,5 @@ private:
 	//T* _storage = nullptr;
 	std::unique_ptr<T[]> _storage;
 };
+
+typedef Dynarray<uint8_t> TBytes;

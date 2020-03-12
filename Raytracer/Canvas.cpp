@@ -1,5 +1,6 @@
 #include "Canvas.h"
 #include "PPM.h"
+#include "File.h"
 
 Canvas::Canvas(int width, int height)
 	: _width(width)

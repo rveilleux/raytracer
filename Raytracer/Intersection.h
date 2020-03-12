@@ -1,5 +1,4 @@
 #pragma once
-#include "Utils.h"
 class Shape;
 
 class Intersection {

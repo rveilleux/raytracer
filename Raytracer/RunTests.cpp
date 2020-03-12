@@ -19,6 +19,8 @@
 #include "GradientPattern.h"
 #include "RingPattern.h"
 #include "CheckerPattern.h"
+#include "PPM.h"
+#include "PerlinNoise.h"
 
 void TestTuple() {
 	UnitTest test("tuples");
@@ -1068,7 +1070,7 @@ void TestPatterns() {
 	auto pattern = CheckerPattern(Color::White, Color::Black);
 	return pattern.PatternAt(Point(0, 0, 0)) == Color::White &&
 		pattern.PatternAt(Point(0.99, 0, 0)) == Color::White &&
-		pattern.PatternAt(Point(1.01, 0, 1)) == Color::Black; });
+		pattern.PatternAt(Point(1.01, 0, 0)) == Color::Black; });
 }
 
 //void TestPlane() {
@@ -1093,4 +1095,9 @@ void RunTests() {
 	TestShapeFunc();
 	TestPlane();
 	TestPatterns();
+
+	//PerlinNoise p;
+	//for (double x = 0; x < 5; x += 0.1) {
+	//	std::cout << p.GetValue({ 0,x,0 }) << std::endl;
+	//}
 }

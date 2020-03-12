@@ -1,7 +1,7 @@
 #include "PPM.h"
 #include <string_view>
 #include <cmath>
-
+#include "ColorString.h"
 
 void PPMBase::Add(const std::string& st) {
 	_strings.push_back(st);
@@ -18,9 +18,9 @@ PPM::PPM(int width, int height) {
 }
 
 void PPM::AddPixel(const Color& c) {
-	AppendAndFlush(c.RedByteString());
-	AppendAndFlush(c.GreenByteString());
-	AppendAndFlush(c.BlueByteString());
+	AppendAndFlush(ColorToByteString(c.x));
+	AppendAndFlush(ColorToByteString(c.y));
+	AppendAndFlush(ColorToByteString(c.z));
 }
 
 void PPM::AppendAndFlush(const std::string_view& s) {

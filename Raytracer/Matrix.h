@@ -1,6 +1,6 @@
 #pragma once
 #include <array>
-#include "Utils.h"
+#include "Math.h"
 #include "Tuple.h"
 
 template <int NR, int NC>

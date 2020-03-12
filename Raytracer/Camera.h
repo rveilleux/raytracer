@@ -2,7 +2,9 @@
 
 #include "Canvas.h"
 #include "BaseTransform.h"
-#include "World.h"
+
+class World;
+class Ray;
 
 class Camera: public BaseTransform {
 public:

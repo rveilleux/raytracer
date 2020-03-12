@@ -1,6 +1,5 @@
 #pragma once
-#include <string>
-#include "Utils.h"
+#include "Math.h"
 
 struct Tuple {
 	double x, y, z, w;
@@ -16,7 +15,6 @@ struct Tuple {
 	double Magnitude() const { return std::sqrt(x*x + y * y + z * z + w * w); }
 	Tuple Normalize() const { double norm = Magnitude(); return *this / norm; }
 	double Dot(const Tuple& rhs) const { return x * rhs.x + y * rhs.y + z * rhs.z + w * rhs.w; }
-	std::string ToString() const { return "(" + std::to_string(x) + "," + std::to_string(y) + "," + std::to_string(z) + "," + std::to_string(w) + ")"; }
 
 	friend bool ApproximatelyEqual(const Tuple& lhs, const Tuple& rhs) {
 		return almostEqual(lhs.x, rhs.x, 0.00001) &&
