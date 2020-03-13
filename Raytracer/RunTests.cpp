@@ -625,6 +625,9 @@ void TestMaterial() {
 	auto c2 = Lighting(m, light, Point(1.1, 0, 0), eyev, normalv, false);
 	return c1 == Color(1,1,1) && c2 == Color(0,0,0);
 		});
+	DOTEST(test, "Reflectivity for the default material", {
+	Material m;
+	return m.reflective == 0; });
 }
 
 void TestIntersection() {
@@ -752,6 +755,14 @@ void TestIntersection() {
 	auto comps = PrepareComputations(i, r);
 	return comps.overPoint.z < -myEpsilon / 2 && comps.point.z > comps.overPoint.z;
 		});
+	DOTEST(test, "Precomputing the reflection vector", {
+	auto shape = Plane();
+	double hsqr2 = std::sqrt(2) / 2;
+	auto r = Ray(Point(0, 1, -1), Vector(0, -hsqr2, hsqr2));
+	auto i = Intersection(std::sqrt(2), &shape);
+	auto comps = PrepareComputations(i, r);
+	return comps.reflectv == Vector(0, hsqr2, hsqr2);
+		});
 }
 
 void TestWorld() {
@@ -765,13 +776,13 @@ void TestWorld() {
 	World w = World::Default();
 	PointLight light = PointLight(Point(-10,10,-10), Color(1,1,1));
 	Sphere s1;
-	auto m1 = w._materialManager.CreateMaterial();
+	auto m1 = w.CreateMaterial();
 	m1->color = Color(0.8, 1.0, 0.6);
 	m1->diffuse = 0.7;
 	m1->specular = 0.2;
 	s1.SetMaterial(m1);
 	Sphere s2;
-	s2.SetMaterial(w._materialManager.GetDefaultMaterial());
+	s2.SetMaterial(w.GetDefaultMaterial());
 	s2.SetTransform(Scaling({ 0.5,0.5,0.5 }));
 	return *w.GetLightSource() == light && *w.GetObject(0) == s1 && *w.GetObject(1) == s2;
 		});
@@ -820,7 +831,7 @@ void TestWorld() {
 	DOTEST(test, "The color with an intersection behind the ray", {
 	World w = World::Default();
 	Shape* outer = w.GetObject(0);
-	auto m = w._materialManager.CreateMaterial();
+	auto m = w.CreateMaterial();
 	m->ambient = 1;
 	outer->SetMaterial(m);
 	Shape* inner = w.GetObject(1);
@@ -853,10 +864,10 @@ void TestWorld() {
 	World w;
 	w.SetLightSource(std::make_unique<PointLight>(Point(0, 0, -10), Color(1, 1, 1)));
 	auto s1 = std::make_unique<Sphere>();
-	s1->SetMaterial(w._materialManager.GetDefaultMaterial());
+	s1->SetMaterial(w.GetDefaultMaterial());
 	w.AddObject(std::move(s1));
 	auto s2 = std::make_unique<Sphere>();
-	s2->SetMaterial(w._materialManager.GetDefaultMaterial());
+	s2->SetMaterial(w.GetDefaultMaterial());
 	s2->SetTransform(Translation({ 0,0,10 }));
 	w.AddObject(std::move(s2));
 	Ray r = Ray(Point(0, 0, 5), Vector(0, 0, 1));
@@ -864,6 +875,72 @@ void TestWorld() {
 	auto comps = PrepareComputations(i, r);
 	auto c = w.ShadeHit(comps);
 	return ApproximatelyEqual(c, Color(0.1, 0.1, 0.1));
+		});
+	DOTEST(test, "The reflected color for a nonreflective material", {
+	World w = World::Default();
+	auto r = Ray(Point(0, 0, 0), Vector(0, 0, 1));
+	auto* shape = w.GetObject(1);
+	shape->GetMaterial()->ambient = 1;
+	auto i = Intersection(1, shape);
+	auto comps = PrepareComputations(i, r);
+	auto color = w.ReflectedColor(comps);
+	return ApproximatelyEqual(color, Color::Black);
+		});
+	DOTEST(test, "The reflected color for a reflective material", {
+	World w = World::Default();
+	auto shape = w.AddObject(std::make_unique<Plane>());
+	shape->SetMaterial(w.GetDefaultMaterial());
+	shape->GetMaterial()->reflective = 0.5;
+	shape->SetTransform(Translation({ 0,-1,0 }));
+	double hsqr2 = std::sqrt(2) / 2;
+	auto r = Ray(Point(0, 0, -3), Vector(0, -hsqr2, hsqr2));
+	auto i = Intersection(std::sqrt(2), shape);
+	auto comps = PrepareComputations(i, r);
+	auto color = w.ReflectedColor(comps);
+	return ApproximatelyEqual(color, Color(0.19033, 0.23791, 0.14274));
+		});
+	DOTEST(test, "ShadeHit() with a reflective material", {
+	World w = World::Default();
+	auto shape = w.AddObject(std::make_unique<Plane>());
+	shape->SetMaterial(w.GetDefaultMaterial());
+	shape->GetMaterial()->reflective = 0.5;
+	shape->SetTransform(Translation({ 0,-1,0 }));
+	double hsqr2 = std::sqrt(2) / 2;
+	auto r = Ray(Point(0, 0, -3), Vector(0, -hsqr2, hsqr2));
+	auto i = Intersection(std::sqrt(2), shape);
+	auto comps = PrepareComputations(i, r);
+	auto color = w.ShadeHit(comps);
+	return ApproximatelyEqual(color, Color(0.87675, 0.92433, 0.82917));
+		});
+	DOTEST(test, "ColorAt() with mutually reflective surfaces", {
+	World w = World::Default();
+	PointLight* light = w.GetLightSource();
+	light->SetPosition(Point(0, 0, 0));
+	light->SetIntensity(Color(1, 1, 1));
+	auto lower = w.AddObject(std::make_unique<Plane>());
+	lower->SetMaterial(w.GetDefaultMaterial());
+	lower->GetMaterial()->reflective = 1;
+	lower->SetTransform(Translation({ 0,-1,0 }));
+	auto upper = w.AddObject(std::make_unique<Plane>());
+	upper->SetMaterial(w.GetDefaultMaterial());
+	upper->SetTransform(Translation({ 0,1,0 }));
+	auto r = Ray(Point(0, 0, 0), Vector(0, 1, 0));
+	Color result = w.ColorAt(r);
+	// If we reach here, we confirmed that we don't get into an infinite recursion in ColorAt()
+	return true;
+		});
+	DOTEST(test, "The reflected color at the maximum recursive depth", {
+	World w = World::Default();
+	auto shape = w.AddObject(std::make_unique<Plane>());
+	shape->SetMaterial(w.GetDefaultMaterial());
+	shape->GetMaterial()->reflective = 0.5;
+	shape->SetTransform(Translation({ 0,-1,0 }));
+	double hsqr2 = std::sqrt(2) / 2;
+	auto r = Ray(Point(0, 0, -3), Vector(0, -hsqr2, hsqr2));
+	auto i = Intersection(std::sqrt(2), shape);
+	auto comps = PrepareComputations(i, r);
+	auto color = w.ReflectedColor(comps, 0);
+	return ApproximatelyEqual(color, Color::Black);
 		});
 }
 

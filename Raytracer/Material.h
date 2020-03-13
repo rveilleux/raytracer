@@ -9,6 +9,7 @@ struct Material {
 	double diffuse = 0.9;
 	double specular = 0.9;
 	double shininess = 200.0;
+	double reflective = 0;
 	std::unique_ptr<Pattern> pattern;
 	friend bool operator==(const Material& lhs, const Material& rhs);
 };

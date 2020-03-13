@@ -154,9 +154,10 @@ public:
 		//auto floor = std::make_unique<Sphere>();
 		//floor->SetTransform(Scaling({ 10,0.01,10 }));
 		auto floor = std::make_unique<Plane>();
-		auto floorMat = world._materialManager.CreateMaterial();
+		auto floorMat = world.CreateMaterial();
 		floorMat->color = Color(1, 0.9, 0.9);
 		floorMat->specular = 0;
+		floorMat->reflective = 0.25;
 		//floorMat->pattern = std::make_unique<StripePattern>(Color(1, 0.9, 0.9), Color(0.2, 0.2, 0.2));
 		floorMat->pattern = std::make_unique<CheckerPattern>(Color(1, 0.9, 0.9), Color(0.2, 0.2, 0.2));
 		// mini-offset of 0.01 to prevent the checker pattern to be noisy due to floating point imprecision
@@ -171,7 +172,13 @@ public:
 		//	Scaling({ 10, 0.01, 10 }));
 		auto leftWall = std::make_unique<Plane>();
 		leftWall->SetTransform(Translation({ 0, 0, 10 }) * RotationX(M_PI / 2));
-		leftWall->SetMaterial(floorMat);
+		auto wallMat = world.CreateMaterial();
+		wallMat->pattern = std::make_unique<CheckerPattern>(Color(1, 0.9, 0.9), Color(0.2, 0.2, 0.2));
+		wallMat->pattern->SetTransform(Translation({ 0.01, 0.01, 0.01 }));
+		wallMat->color = Color(1, 0.9, 0.9);
+		wallMat->specular = 0;
+		wallMat->reflective = 0.1;
+		leftWall->SetMaterial(wallMat);
 
 		//auto rightWall = std::make_unique<Sphere>();
 		//rightWall->SetTransform(
@@ -183,10 +190,11 @@ public:
 
 		auto middle = std::make_unique<Sphere>();
 		middle->SetTransform(Translation({ -0.5, 1, 0.5 }));
-		auto middleMat = world._materialManager.CreateMaterial();
+		auto middleMat = world.CreateMaterial();
 		middleMat->color = Color(0.1, 1, 0.5);
 		middleMat->diffuse = 0.7;
 		middleMat->specular = 0.3;
+		middleMat->reflective = 0.5;
 		//middleMat->pattern = std::make_unique<StripePattern>(Color(0.1, 1, 0.5), Color(0.9, 0.8, 0.2));
 		auto ringPattern = std::make_unique<RingPattern>(Color(0.1, 1, 0.5), Color(0.9, 0.8, 0.2));
 		middleMat->pattern = std::make_unique<JitterPattern>(std::move(ringPattern));
@@ -195,10 +203,11 @@ public:
 
 		auto right = std::make_unique<Sphere>();
 		right->SetTransform(Translation({ 1.5, 0.5, -0.5 }) * Scaling({ 0.5, 0.5, 0.5 }));
-		auto rightMat = world._materialManager.CreateMaterial();
+		auto rightMat = world.CreateMaterial();
 		rightMat->color = Color(0.5, 1, 0.1);
 		rightMat->diffuse = 0.7;
 		rightMat->specular = 0.3;
+		rightMat->reflective = 0.15;
 		//rightMat->pattern = std::make_unique<StripePattern>(Color(0.5, 1, 0.1), Color(0.5, 0.1, 0.1));
 		rightMat->pattern = std::make_unique<CheckerPattern>(Color(0.5, 1, 0.1), Color(0.5, 0.1, 0.1));
 		rightMat->pattern->SetTransform(Scaling({ 0.2, 0.2, 0.2 }));
@@ -206,10 +215,11 @@ public:
 
 		auto left = std::make_unique<Sphere>();
 		left->SetTransform(Translation({ -1.5, 0.33, -0.75 }) * Scaling({ 0.33, 0.33, 0.33 }));
-		auto leftMat = world._materialManager.CreateMaterial();
+		auto leftMat = world.CreateMaterial();
 		leftMat->color = Color(1, 0.8, 0.1);
 		leftMat->diffuse = 0.7;
 		leftMat->specular = 0.3;
+		leftMat->reflective = 0.15;
 		//leftMat->pattern = std::make_unique<StripePattern>(Color(1, 0.8, 0.1), Color(0.1, 0.1, 0.3));
 		leftMat->pattern = std::make_unique<GradientPattern>(Color(1, 0.8, 0.1), Color(0.1, 0.1, 0.3));
 		leftMat->pattern->SetTransform(RotationZ(M_PI_4));
@@ -238,7 +248,7 @@ public:
 				to,
 				up));
 			rightMat->pattern->SetTransform(rightMat->pattern->GetTransform() * RotationX(0.01) * RotationY(0.009) * RotationZ(0.008));
-			return camera.Render(world);
+			return camera.Render(world, 5);
 		});
 		glWindow.StartMainLoop();
 

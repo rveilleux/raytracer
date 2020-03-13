@@ -10,6 +10,8 @@ public:
 	{}
 	Color GetIntensity() const { return _intensity; }
 	Point GetPosition() const { return _position; }
+	void SetPosition(const Point& p) { _position = p; }
+	void SetIntensity(const Color& color) { _intensity = color; }
 	friend bool operator==(const PointLight& lhs, const PointLight& rhs);
 private:
 	Color _intensity;

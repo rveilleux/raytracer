@@ -32,6 +32,7 @@ struct TComputations {
 		, inside(originalNormalv.Dot(eyev) < 0)
 		, normalv(inside ? -originalNormalv : originalNormalv)
 		, overPoint(point + normalv * myEpsilon)
+		, reflectv(ray.direction.Reflect(this->normalv))
 	{
 	}
 	const double t;
@@ -42,6 +43,7 @@ struct TComputations {
 	const bool inside;
 	const Vector normalv;
 	const Point overPoint;
+	const Vector reflectv;
 };
 
 TComputations PrepareComputations(const Intersection& intersection, const Ray& ray);

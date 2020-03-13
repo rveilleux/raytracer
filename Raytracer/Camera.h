@@ -14,7 +14,7 @@ public:
 	double GetFOV() const { return _fieldOfView; }
 	double GetPixelSize() const { return _pixelSize; }
 	Ray RayForPixel(int x, int y) const;
-	Canvas Render(const World& w) const;
+	Canvas Render(const World& w, int maxRecursion = 1) const;
 
 protected:
 	void OnTransformedChanged() override;
@@ -32,6 +32,6 @@ private:
 
 	double ComputePixelSize() const;
 	Camera::THalfSize ComputeHalfSize() const;
-	void RenderLine(const World& w, Canvas& image, int y) const;
-	void RenderLines(const World& w, Canvas& image, int begin, int end) const;
+	void RenderLine(const World& w, Canvas& image, int y, int maxRecursion) const;
+	void RenderLines(const World& w, Canvas& image, int begin, int end, int maxRecursion) const;
 };

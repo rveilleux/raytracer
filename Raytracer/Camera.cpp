@@ -48,7 +48,7 @@ Ray Camera::RayForPixel(int x, int y) const {
 	return Ray(_localOrigin, direction);
 }
 
-Canvas Camera::Render(const World& w) const {
+Canvas Camera::Render(const World& w, int maxRecursion) const {
 	Canvas image(_hsize, _vsize);
 
 	{
@@ -62,32 +62,32 @@ Canvas Camera::Render(const World& w) const {
 				end = _vsize;
 			}
 			//std::cout << "thread " << i << " begin=" << begin << " end=" << end << std::endl;
-			threads.Add([=, &w, &image]() { RenderLines(w, image, begin, end); });
+			threads.Add([=, &w, &image]() { RenderLines(w, image, begin, end, maxRecursion); });
 			begin += nbLinesPerThread;
 			end += nbLinesPerThread;
 		}
 	}
 
 	//for (int y = 0; y < _vsize; y++) {
-	//	RenderLine(w, image, y);
+	//	RenderLine(w, image, y, maxRecursion);
 	//}
 
 	//std::cout << "Camera::Render: finished." << std::endl;
 	return image;
 }
 
-void Camera::RenderLine(const World& w, Canvas& image, int y) const {
+void Camera::RenderLine(const World& w, Canvas& image, int y, int maxRecursion) const {
 	for (int x = 0; x < _hsize; x++) {
 		Ray ray = RayForPixel(x, y);
-		Color color = w.ColorAt(ray);
+		Color color = w.ColorAt(ray, maxRecursion);
 		image.WritePixel(x, y, color);
 	}
 }
 
-void Camera::RenderLines(const World& w, Canvas& image, int begin, int end) const {
+void Camera::RenderLines(const World& w, Canvas& image, int begin, int end, int maxRecursion) const {
 	//std::cout << "Camera::RenderLines: " << begin << " to " << end << " start " << std::endl;
 	for (int y = begin; y < end; y++) {
-		RenderLine(w, image, y);
+		RenderLine(w, image, y, maxRecursion);
 	}
 	//std::cout << "Camera::RenderLines: " << begin << " to " << end << " end " << std::endl;
 }
