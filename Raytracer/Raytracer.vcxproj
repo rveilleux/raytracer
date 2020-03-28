@@ -112,6 +112,7 @@
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Dynarray.cpp" />
     <ClCompile Include="File.cpp" />
+    <ClCompile Include="GlassSphere.cpp" />
     <ClCompile Include="GLWindow.cpp" />
     <ClCompile Include="GradientPattern.cpp" />
     <ClCompile Include="Intersection.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="ColorString.h" />
     <ClInclude Include="Dynarray.h" />
     <ClInclude Include="File.h" />
+    <ClInclude Include="GlassSphere.h" />
     <ClInclude Include="GLWindow.h" />
     <ClInclude Include="GradientPattern.h" />
     <ClInclude Include="Intersection.h" />

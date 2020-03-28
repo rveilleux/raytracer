@@ -21,6 +21,7 @@
 #include "CheckerPattern.h"
 #include "PPM.h"
 #include "PerlinNoise.h"
+#include "GlassSphere.h"
 
 void TestTuple() {
 	UnitTest test("tuples");
@@ -541,6 +542,14 @@ void TestSphere() {
 	s.SetMaterial(m);
 	return s.GetMaterial() == m;
 		});
+	DOTEST(test, "A helper for producting a sphere with a glassy material", {
+	MaterialManager materialManager;
+	auto s = GlassSphere(materialManager);
+	Material* m = s.GetMaterial();
+	return s.GetTransform() == IdentityMatrix &&
+		m->transparency == 1 &&
+		m->refractiveIndex == 1.5;
+		});
 }
 
 void TestLight() {
@@ -628,6 +637,9 @@ void TestMaterial() {
 	DOTEST(test, "Reflectivity for the default material", {
 	Material m;
 	return m.reflective == 0; });
+	DOTEST(test, "Transparency and Refractive Index for the default material", {
+	Material m;
+	return m.transparency == 0 && m.refractiveIndex == 1; });
 }
 
 void TestIntersection() {
@@ -762,6 +774,35 @@ void TestIntersection() {
 	auto i = Intersection(std::sqrt(2), &shape);
 	auto comps = PrepareComputations(i, r);
 	return comps.reflectv == Vector(0, hsqr2, hsqr2);
+		});
+	DOTEST(test, "Finding n1 and n2 at various intersections", {
+	MaterialManager materialManager;
+	auto a = GlassSphere(materialManager);
+	a.SetTransform(Scaling({ 2,2,2 }));
+	a.GetMaterial()->refractiveIndex = 1.5;
+	auto b = GlassSphere(materialManager);
+	b.SetTransform(Translation({ 0,0,-0.25 }));
+	b.GetMaterial()->refractiveIndex = 2;
+	auto c = GlassSphere(materialManager);
+	c.SetTransform(Translation({ 0,0,0.25 }));
+	c.GetMaterial()->refractiveIndex = 2.5;
+	auto r = Ray(Point(0, 0, -4), Vector(0, 0, 1));
+	auto xs = Intersections({ 
+		Intersection(2, &a),
+		Intersection(2.75, &b),
+		Intersection(3.25, &c),
+		Intersection(4.75, &b),
+		Intersection(5.25, &c),
+		Intersection(6, &a)});
+	const auto& sorted = xs.GetSorted();
+	bool result = true;
+	double n1[] = { 1.0, 1.5, 2.0, 2.5, 2.5, 1.5 };
+	double n2[] = { 1.5, 2.0, 2.5, 2.5, 1.5, 1.0 };
+	for (int i = 0; i < 6; i++) {
+		auto comps = PrepareComputations(sorted[i], r, xs);
+		result = result && comps.n1 == n1[i] && comps.n2 == n2[i];
+	}
+	return result;
 		});
 }
 

@@ -30,7 +30,13 @@ bool operator==(const Shape& lhs, const Shape& rhs) {
 }
 
 TComputations PrepareComputations(const Intersection& intersection, const Ray& ray) {
-	TComputations comps(intersection, ray);
+	Intersections tempIntersections;
+	tempIntersections.Add(intersection);
+	return PrepareComputations(intersection, ray, tempIntersections);
+}
+
+TComputations PrepareComputations(const Intersection& intersection, const Ray& ray, const Intersections& intersections) {
+	TComputations comps(intersection, ray, intersections);
 	//comps.t = intersection.t;
 	//comps.object = intersection.object;
 	//comps.point = ray.Position(comps.t);

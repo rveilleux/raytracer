@@ -23,7 +23,7 @@ protected:
 };
 
 struct TComputations {
-	TComputations(const Intersection& intersection, const Ray& ray)
+	TComputations(const Intersection& intersection, const Ray& ray, const Intersections& intersections)
 		: t(intersection.t)
 		, object(intersection.object)
 		, point(ray.Position(t))
@@ -33,6 +33,8 @@ struct TComputations {
 		, normalv(inside ? -originalNormalv : originalNormalv)
 		, overPoint(point + normalv * myEpsilon)
 		, reflectv(ray.direction.Reflect(this->normalv))
+		, n1(0)
+		, n2(0)
 	{
 	}
 	const double t;
@@ -44,6 +46,9 @@ struct TComputations {
 	const Vector normalv;
 	const Point overPoint;
 	const Vector reflectv;
+	const double n1;
+	const double n2;
 };
 
 TComputations PrepareComputations(const Intersection& intersection, const Ray& ray);
+TComputations PrepareComputations(const Intersection& intersection, const Ray& ray, const Intersections& intersections);
