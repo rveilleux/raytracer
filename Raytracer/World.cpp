@@ -58,6 +58,7 @@ Color World::ShadeHit(const TComputations& comps, int remainingRecursion) const 
 	bool shadowed = IsShadowed(comps.overPoint);
 	Material* objectMat = comps.object->GetMaterial();
 	_ASSERT_EXPR(objectMat, L"Object must have a material to be renderable");
+	__analysis_assume(objectMat);
 	Color surface = Lighting(*objectMat, comps.object,
 		*GetLightSource(), comps.point, comps.eyev, comps.normalv, shadowed);
 	Color reflected = ReflectedColor(comps, remainingRecursion);
