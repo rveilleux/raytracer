@@ -23,7 +23,7 @@ protected:
 };
 
 struct TComputations {
-	TComputations(const Intersection& intersection, const Ray& ray, const Intersections& intersections)
+	TComputations(const Intersection& intersection, const Ray& ray, const Intersections& /*intersections*/)
 		: t(intersection.t)
 		, object(intersection.object)
 		, point(ray.Position(t))

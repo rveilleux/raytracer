@@ -17,6 +17,7 @@ public:
 	~GLInternal();
 
 	void SetRenderCallback(const GLWindow::TRenderCallBackFunc& func);
+	Canvas& GetCanvas();
 
 	void display();
 	void reshape_window(GLsizei w, GLsizei h);
@@ -31,6 +32,7 @@ private:
 	int _width;
 	int _height;
 	Dynarray<uint8_t> _screenData;
+	Canvas _image;
 
 	GLWindow::TRenderCallBackFunc _renderFunc;
 	Point _cameraFrom = Point(0, 1.5, -5);
@@ -114,12 +116,12 @@ void GLInternal::ComputeCameraPosition() {
 
 void GLInternal::RenderCanvasToScreenData() {
 	Point cameraTo = _cameraFrom + _cameraForward;
-	const Canvas& canvas = _renderFunc(_cameraFrom, cameraTo, _cameraUp);
+	_renderFunc(_cameraFrom, cameraTo, _cameraUp);
 	// Update pixels
 	uint8_t* writePtr = _screenData.GetData();
 	for (int y = 0; y < _screenHeight; ++y) {
 		for (int x = 0; x < _screenWidth; ++x) {
-			const Color& c = canvas.PixelAt(x, y);
+			const Color& c = _image.PixelAt(x, y);
 			writePtr[2] = Color::DoubleToByte(c.x);
 			writePtr[1] = Color::DoubleToByte(c.y);
 			writePtr[0] = Color::DoubleToByte(c.z);
@@ -252,7 +254,7 @@ GLInternal::GLInternal(int width, int height)
 	: _width(width)
 	, _height(height)
 	, _screenData(_width * _height * 4)
-
+	, _image(width, height)
 {
 	_ASSERT_EXPR(GLGlobal::glInternal == nullptr, L"GLInternal failure: only one GLWindow is supported");
 
@@ -291,6 +293,10 @@ GLInternal::~GLInternal() {
 	GLGlobal::glInternal = nullptr;
 }
 
+Canvas& GLInternal::GetCanvas() {
+	return _image;
+}
+
 GLWindow::GLWindow(int width, int height)
 	: _impl(std::make_unique<GLInternal>(width, height))
 {
@@ -305,4 +311,8 @@ void GLWindow::StartMainLoop() {
 
 void GLWindow::SetRenderCallback(const TRenderCallBackFunc& func) {
 	_impl->SetRenderCallback(func);
+}
+
+Canvas& GLWindow::GetCanvas() {
+	return _impl->GetCanvas();
 }

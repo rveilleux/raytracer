@@ -50,7 +50,11 @@ Ray Camera::RayForPixel(int x, int y) const {
 
 Canvas Camera::Render(const World& w, int maxRecursion) const {
 	Canvas image(_hsize, _vsize);
+	Render(w, maxRecursion, image);
+	return image;
+}
 
+void Camera::Render(const World& w, int maxRecursion, Canvas& image) const {
 	{
 		ThreadList threads;
 		int nbLinesPerThread = std::max((_vsize + threads.GetCount() - 1) / threads.GetCount(), 1);
@@ -73,7 +77,6 @@ Canvas Camera::Render(const World& w, int maxRecursion) const {
 	//}
 
 	//std::cout << "Camera::Render: finished." << std::endl;
-	return image;
 }
 
 void Camera::RenderLine(const World& w, Canvas& image, int y, int maxRecursion) const {

@@ -15,6 +15,7 @@ public:
 	double GetPixelSize() const { return _pixelSize; }
 	Ray RayForPixel(int x, int y) const;
 	Canvas Render(const World& w, int maxRecursion = 1) const;
+	void Render(const World& w, int maxRecursion, Canvas& image) const;
 
 protected:
 	void OnTransformedChanged() override;

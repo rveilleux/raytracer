@@ -53,44 +53,48 @@
 //                   Average duration = 264.915 ms (World::GetIntersectHit to only keep 'best first hit')
 // Debug 100x50: Average duration = 461.826 ms
 
+#define DEBUG_ALLOC
+
+#ifdef DEBUG_ALLOC
 // Overloading Global new operator
-//static int GAllocCount = 0;
-//static int GTotalAllocCount = 0;
-//static int GDeepest = 0;
-//void* operator new(size_t sz)
-//{
-//	void* m = malloc(sz);
-//	//std::cout << "Alloc #" << GAllocCount << " New " << m << " size:" << sz << std::endl;
-//	GAllocCount++;
-//	GTotalAllocCount++;
-//	if (GAllocCount > GDeepest) {
-//		GDeepest = GAllocCount;
-//		std::cout << "New deepest: Alloc #" << GAllocCount << " New " << m << " size:" << sz << std::endl;
-//	}
-//	return m;
-//}
-//// Overloading Global delete operator
-//void operator delete(void* m)
-//{
-//	GAllocCount--;
-//	//std::cout << "Alloc #" << GAllocCount << " Free " << m << std::endl;
-//	free(m);
-//}
-//// Overloading Global new[] operator
-//void* operator new[](size_t sz)
-//{
-//	void* m = malloc(sz);
-//	std::cout << "Alloc #" << GAllocCount << " New[] " << m << " size:" << sz << std::endl;
-//	GAllocCount++;
-//	return m;
-//}
-//// Overloading Global delete[] operator
-//void operator delete[](void* m)
-//{
-//	GAllocCount--;
-//	std::cout << "Alloc #" << GAllocCount << " Delete[] " << m << std::endl;
-//	free(m);
-//}
+static int GAllocCount = 0;
+static int GTotalAllocCount = 0;
+static int GDeepest = 0;
+void* operator new(size_t sz)
+{
+	void* m = malloc(sz);
+	//std::cout << "Alloc #" << GAllocCount << " New " << m << " size:" << sz << std::endl;
+	GAllocCount++;
+	GTotalAllocCount++;
+	if (GAllocCount > GDeepest) {
+		GDeepest = GAllocCount;
+		std::cout << "New deepest: Alloc #" << GAllocCount << " New " << m << " size:" << sz << std::endl;
+	}
+	return m;
+}
+// Overloading Global delete operator
+void operator delete(void* m)
+{
+	GAllocCount--;
+	//std::cout << "Alloc #" << GAllocCount << " Free " << m << std::endl;
+	free(m);
+}
+// Overloading Global new[] operator
+void* operator new[](size_t sz)
+{
+	void* m = malloc(sz);
+	std::cout << "Alloc #" << GAllocCount << " New[] " << m << " size:" << sz << std::endl;
+	GAllocCount++;
+	return m;
+}
+// Overloading Global delete[] operator
+void operator delete[](void* m)
+{
+	GAllocCount--;
+	std::cout << "Alloc #" << GAllocCount << " Delete[] " << m << std::endl;
+	free(m);
+}
+#endif
 
 class Game {
 public:
@@ -227,9 +231,13 @@ public:
 
 		world.SetLightSource(std::make_unique<PointLight>(Point(-10, 10, -10), Color(1, 1, 1)));
 
+#ifdef _DEBUG
+		const int kWidth = 80;
+		const int kHeight = 40;
+#else
 		const int kWidth = 320;
 		const int kHeight = 180;
-
+#endif
 		Camera camera(kWidth, kHeight, M_PI / 3);
 		world.AddObject(std::move(floor));
 		world.AddObject(std::move(leftWall));
@@ -248,19 +256,19 @@ public:
 				to,
 				up));
 			rightMat->pattern->SetTransform(rightMat->pattern->GetTransform() * RotationX(0.01) * RotationY(0.009) * RotationZ(0.008));
-			return camera.Render(world, 5);
+			camera.Render(world, 1, glWindow.GetCanvas());
 		});
 		glWindow.StartMainLoop();
 
-		Canvas canvas = camera.Render(world);
-		canvas.SaveToFile("test.ppm");
+		//Canvas canvas = camera.Render(world);
+		//canvas.SaveToFile("test.ppm");
 	}
 };
 
 int __cdecl main(int /*argc*/, char** /*argv*/) {
 	std::cout << "Hello World!\n";
 
-	RunTests();
+	//RunTests();
 
 	//Game::GameTest();
 	//Clock::ClockTest();
@@ -277,6 +285,8 @@ int __cdecl main(int /*argc*/, char** /*argv*/) {
 	average /= NBITER;
 	std::cout << "Average duration = " << average << std::endl;
 
-	//std::cout << "GTotalAllocCount=" << GTotalAllocCount << std::endl;
-	//std::cout << "GAllocCount should be 0 or almost:" << GAllocCount << " deepest was: " << GDeepest << std::endl;
+#ifdef DEBUG_ALLOC
+	std::cout << "GTotalAllocCount=" << GTotalAllocCount << std::endl;
+	std::cout << "GAllocCount should be 0 or almost:" << GAllocCount << " deepest was: " << GDeepest << std::endl;
+#endif
 }
