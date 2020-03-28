@@ -1,7 +1,6 @@
 #pragma once
 
-#define _USE_MATH_DEFINES
-#include <math.h>
+#include <cmath>
 #include <limits>
 
 inline bool IsOdd(int number) { return (number & 1) == 1; }
