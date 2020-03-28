@@ -9,7 +9,7 @@ public:
 	TStrings GetLines() const { return _strings; }
 protected:
 	TStrings _strings;
-	void Add(const std::string& st);
+	void Add(std::string&& st);
 };
 
 // Text-format implementation of PPM:

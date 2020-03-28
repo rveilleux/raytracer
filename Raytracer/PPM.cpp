@@ -3,8 +3,8 @@
 #include <cmath>
 #include "ColorString.h"
 
-void PPMBase::Add(const std::string& st) {
-	_strings.push_back(st);
+void PPMBase::Add(std::string&& st) {
+	_strings.emplace_back(std::move(st));
 }
 
 namespace {
@@ -34,7 +34,7 @@ void PPM::AppendAndFlush(const std::string_view& s) {
 }
 
 void PPM::EndLine() {
-	Add(_currentPixelLine);
+	Add(std::move(_currentPixelLine));
 	_currentPixelLine.clear();
 }
 
