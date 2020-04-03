@@ -3,7 +3,7 @@
 #include "Tuple.h"
 
 namespace {
-	const static uint8_t p[] = { 151,160,137,91,90,15,                 // Hash lookup table as defined by Ken Perlin.  This is a randomly
+	const static uint8_t p[256] = { 151,160,137,91,90,15,                 // Hash lookup table as defined by Ken Perlin.  This is a randomly
 		131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,    // arranged array of all numbers from 0-255 inclusive.
 		190, 6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,
 		88,237,149,56,87,174,20,125,136,171,168, 68,175,74,165,71,134,139,48,27,166,
@@ -18,18 +18,18 @@ namespace {
 		138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180
 	};
 
-	static double fade(double t) {
+	double constexpr fade(double t) {
 		// Fade function as defined by Ken Perlin.  This eases coordinate values
 		// so that they will ease towards integral values.  This ends up smoothing
 		// the final output.
 		return t * t * t * (t * (t * 6 - 15) + 10);         // 6t^5 - 15t^4 + 10t^3
 	}
 
-	static double lerp(double a, double b, double x) {
+	double constexpr lerp(double a, double b, double x) {
 		return a + x * (b - a);
 	}
 
-	static double grad(int hash, double x, double y, double z) {
+	double constexpr grad(int hash, double x, double y, double z) {
 		switch (hash & 0xF)
 		{
 		case 0x0: return  x + y;
@@ -52,16 +52,16 @@ namespace {
 		}
 	}
 
-	double perlin(const Point& point) {
+	double perlin(const Point& point) noexcept {
 		//if (repeat > 0) {                                    // If we have any repeat on, change the coordinates to their "local" repetitions
 		//	x = x % repeat;
 		//	y = y % repeat;
 		//	z = z % repeat;
 		//}
 
-		uint8_t xi = (uint8_t)point.x;                              // Calculate the "unit cube" that the point asked will be located in
-		uint8_t yi = (uint8_t)point.y;                              // The left bound is ( |_x_|,|_y_|,|_z_| ) and the right bound is that
-		uint8_t zi = (uint8_t)point.z;                              // plus 1.  Next we calculate the location (from 0.0 to 1.0) in that cube.
+		const uint8_t xi = static_cast<uint8_t>(point.x);      // Calculate the "unit cube" that the point asked will be located in
+		const uint8_t yi = static_cast<uint8_t>(point.y);      // The left bound is ( |_x_|,|_y_|,|_z_| ) and the right bound is that
+		const uint8_t zi = static_cast<uint8_t>(point.z);      // plus 1.  Next we calculate the location (from 0.0 to 1.0) in that cube.
 		double xf = std::fmod(point.x, 1);
 		if (xf < 0) xf += 1;
 		double yf = std::fmod(point.y, 1);
@@ -69,22 +69,25 @@ namespace {
 		double zf = std::fmod(point.z, 1);
 		if (zf < 0) zf += 1;
 
-		double u = fade(xf);
-		double v = fade(yf);
-		double w = fade(zf);
+		const double u = fade(xf);
+		const double v = fade(yf);
+		const double w = fade(zf);
 
-		uint8_t xi1 = xi + 1;
-		uint8_t yi1 = yi + 1;
-		uint8_t zi1 = zi + 1;
+		const uint8_t xi1 = xi + 1;
+		const uint8_t yi1 = yi + 1;
+		const uint8_t zi1 = zi + 1;
 
-		int aaa = p[uint8_t(p[uint8_t(p[xi] + yi)] + zi)];
-		int aba = p[uint8_t(p[uint8_t(p[xi] + yi1)] + zi)];
-		int aab = p[uint8_t(p[uint8_t(p[xi] + yi)] + zi1)];
-		int abb = p[uint8_t(p[uint8_t(p[xi] + yi1)] + zi1)];
-		int baa = p[uint8_t(p[uint8_t(p[xi1] + yi)] + zi)];
-		int bba = p[uint8_t(p[uint8_t(p[xi1] + yi1)] + zi)];
-		int bab = p[uint8_t(p[uint8_t(p[xi1] + yi)] + zi1)];
-		int bbb = p[uint8_t(p[uint8_t(p[xi1] + yi1)] + zi1)];
+#pragma warning (push)
+#pragma warning (disable: 26482)
+		const int aaa = p[static_cast<uint8_t>(p[static_cast<uint8_t>(p[xi] + yi)] + zi)];
+		const int aba = p[static_cast<uint8_t>(p[static_cast<uint8_t>(p[xi] + yi1)] + zi)];
+		const int aab = p[static_cast<uint8_t>(p[static_cast<uint8_t>(p[xi] + yi)] + zi1)];
+		const int abb = p[static_cast<uint8_t>(p[static_cast<uint8_t>(p[xi] + yi1)] + zi1)];
+		const int baa = p[static_cast<uint8_t>(p[static_cast<uint8_t>(p[xi1] + yi)] + zi)];
+		const int bba = p[static_cast<uint8_t>(p[static_cast<uint8_t>(p[xi1] + yi1)] + zi)];
+		const int bab = p[static_cast<uint8_t>(p[static_cast<uint8_t>(p[xi1] + yi)] + zi1)];
+		const int bbb = p[static_cast<uint8_t>(p[static_cast<uint8_t>(p[xi1] + yi1)] + zi1)];
+#pragma warning (pop)
 
 		double x1 = lerp(grad(aaa, xf, yf, zf),           // The gradient function calculates the dot product between a pseudorandom
 			grad(baa, xf - 1, yf, zf),             // gradient vector and the vector from the input coordinate to the 8
@@ -92,7 +95,7 @@ namespace {
 		double x2 = lerp(grad(aba, xf, yf - 1, zf),           // This is all then lerped together as a sort of weighted average based on the faded (u,v,w)
 			grad(bba, xf - 1, yf - 1, zf),             // values we made earlier.
 			u);
-		double y1 = lerp(x1, x2, v);
+		const double y1 = lerp(x1, x2, v);
 
 		x1 = lerp(grad(aab, xf, yf, zf - 1),
 			grad(bab, xf - 1, yf, zf - 1),
@@ -100,12 +103,12 @@ namespace {
 		x2 = lerp(grad(abb, xf, yf - 1, zf - 1),
 			grad(bbb, xf - 1, yf - 1, zf - 1),
 			u);
-		double y2 = lerp(x1, x2, v);
+		const double y2 = lerp(x1, x2, v);
 
 		return (lerp(y1, y2, w) + 1) / 2;                      // For convenience we bind the result to 0 - 1 (theoretical min/max before is [-1, 1])
 	}
 
-	double OctavePerlin(double x, double y, double z, int octaves, double persistence) {
+	double OctavePerlin(double x, double y, double z, int octaves, double persistence) noexcept {
 		double total = 0;
 		double frequency = 1;
 		double amplitude = 1;
@@ -126,6 +129,6 @@ namespace {
 //PerlinNoise::PerlinNoise() {
 //}
 
-double PerlinNoise::GetValue(const Point& point) {
+double PerlinNoise::GetValue(const Point& point) noexcept {
 	return perlin(point);
 }

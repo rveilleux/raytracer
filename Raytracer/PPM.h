@@ -30,8 +30,8 @@ class PPMBinary : public PPMBase
 {
 public:
 	PPMBinary(int width, int height);
-	void AddPixel(const Color& c);
-	const TBytes& GetBytes() const { return _pixelData; }
+	void AddPixel(const Color& c) noexcept;
+	const TBytes& GetBytes() const noexcept { return _pixelData; }
 private:
 	TBytes _pixelData;
 	int _addPixelIndex = 0;

@@ -13,14 +13,14 @@ Camera::Camera(int hsize, int vsize, double fov)
 {
 }
 
-void Camera::OnTransformedChanged() {
+void Camera::OnTransformedChanged() noexcept {
 	BaseTransform::OnTransformedChanged();
 	_localOrigin = GetInverseTransform() * Point(0, 0, 0);
 }
 
-Camera::THalfSize Camera::ComputeHalfSize() const {
-	double halfView = std::tan(_fieldOfView / 2);
-	double aspect = static_cast<double>(_hsize) / _vsize;
+Camera::THalfSize Camera::ComputeHalfSize() const noexcept {
+	const double halfView = std::tan(_fieldOfView / 2);
+	const double aspect = static_cast<double>(_hsize) / _vsize;
 	double halfWidth = halfView;
 	double halfHeight = halfView;
 
@@ -33,18 +33,18 @@ Camera::THalfSize Camera::ComputeHalfSize() const {
 	return { halfWidth, halfHeight };
 }
 
-double Camera::ComputePixelSize() const {
+double Camera::ComputePixelSize() const noexcept {
 	return _halfSize.width * 2 / _hsize;
 }
 
-Ray Camera::RayForPixel(int x, int y) const {
-	double xoffset = (x + 0.5) * _pixelSize;
-	double yoffset = (y + 0.5) * _pixelSize;
-	double worldX = _halfSize.width - xoffset;
-	double worldY = _halfSize.height - yoffset;
+Ray Camera::RayForPixel(int x, int y) const noexcept {
+	const double xoffset = (x + 0.5) * _pixelSize;
+	const double yoffset = (y + 0.5) * _pixelSize;
+	const double worldX = _halfSize.width - xoffset;
+	const double worldY = _halfSize.height - yoffset;
 	const auto& inv = GetInverseTransform();
-	Point pixel = inv * Point(worldX, worldY, -1);
-	Vector direction = (pixel - _localOrigin).Normalize();
+	const Point pixel = inv * Point(worldX, worldY, -1);
+	const Vector direction = (pixel - _localOrigin).Normalize();
 	return Ray(_localOrigin, direction);
 }
 
@@ -57,7 +57,7 @@ Canvas Camera::Render(const World& w, int maxRecursion) const {
 void Camera::Render(const World& w, int maxRecursion, Canvas& image) const {
 	{
 		ThreadList threads;
-		int nbLinesPerThread = std::max((_vsize + threads.GetCount() - 1) / threads.GetCount(), 1);
+		const int nbLinesPerThread = std::max((_vsize + threads.GetCount() - 1) / threads.GetCount(), 1);
 
 		int begin = 0;
 		int end = nbLinesPerThread;
@@ -81,8 +81,8 @@ void Camera::Render(const World& w, int maxRecursion, Canvas& image) const {
 
 void Camera::RenderLine(const World& w, Canvas& image, int y, int maxRecursion) const {
 	for (int x = 0; x < _hsize; x++) {
-		Ray ray = RayForPixel(x, y);
-		Color color = w.ColorAt(ray, maxRecursion);
+		const Ray ray = RayForPixel(x, y);
+		const Color color = w.ColorAt(ray, maxRecursion);
 		image.WritePixel(x, y, color);
 	}
 }

@@ -4,8 +4,7 @@
 class Plane: public Shape
 {
 public:
-	virtual ~Plane() {}
 	void LocalIntersect(const Ray& localRay, Intersections& outIntersections) const override;
-	std::optional<Intersection> LocalFirstIntersect(const Ray& localRay) const override;
-	Vector LocalNormalAt(const Point& localp) const override;
+	std::optional<Intersection> LocalFirstIntersect(const Ray& localRay) const noexcept override;
+	Vector LocalNormalAt(const Point& localp) const noexcept override;
 };

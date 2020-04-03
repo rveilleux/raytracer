@@ -6,10 +6,9 @@
 
 class Shape: public BaseTransform {
 public:
-	virtual ~Shape() {};
-	void SetMaterial(Material* m) { _material = m; }
-	Material* GetMaterial() const { return _material; }
-	friend bool operator==(const Shape& lhs, const Shape& rhs);
+	void SetMaterial(Material* m) noexcept { _material = m; }
+	Material* GetMaterial() const noexcept { return _material; }
+	friend bool operator==(const Shape& lhs, const Shape& rhs) noexcept;
 	Vector NormalAt(const Point& p) const;
 	virtual Vector LocalNormalAt(const Point& localp) const = 0;
 	Intersections Intersect(const Ray& ray) const;
@@ -33,8 +32,8 @@ struct TComputations {
 		, normalv(inside ? -originalNormalv : originalNormalv)
 		, overPoint(point + normalv * myEpsilon)
 		, reflectv(ray.direction.Reflect(this->normalv))
-		, n1(0)
-		, n2(0)
+		, n1(t)
+		, n2(t)
 	{
 	}
 	const double t;

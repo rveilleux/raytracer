@@ -5,18 +5,18 @@
 
 class Ray {
 public:
-	Ray(const Ray& ray) = default;
-	Ray& operator=(const Ray& ray) = default;
-	Ray(const Point& p, const Vector& v)
+	//Ray(const Ray& ray) noexcept = default;
+	//Ray& operator=(const Ray& ray) noexcept = default;
+	Ray(const Point& p, const Vector& v) noexcept
 		: origin(p)
 		, direction(v)
 	{}
 
-	Point Position(double t) const {
+	Point Position(double t) const noexcept {
 		return origin + direction * t;
 	}
 
-	Ray Transform(const Matrix<4, 4>& m) const {
+	Ray Transform(const Matrix<4, 4>& m) const noexcept {
 		return Ray(m * origin, m * direction);
 	}
 

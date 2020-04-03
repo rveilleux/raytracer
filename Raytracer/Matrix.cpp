@@ -1,11 +1,11 @@
 #include "Matrix.h"
 
 
-Matrix<4, 4> ViewTransform(const Point& from, const Point& to, const Vector& up) {
-	Vector forward = (to - from).Normalize();
-	Vector upn = up.Normalize();
-	Vector left = forward.Cross(upn);
-	Vector trueUp = left.Cross(forward);
+Matrix<4, 4> ViewTransform(const Point& from, const Point& to, const Vector& up) noexcept {
+	const Vector forward = (to - from).Normalize();
+	const Vector upn = up.Normalize();
+	const Vector left = forward.Cross(upn);
+	const Vector trueUp = left.Cross(forward);
 	Matrix<4, 4> orientation;
 	orientation.SetAll(
 		{ left.x, left.y, left.z, 0 },

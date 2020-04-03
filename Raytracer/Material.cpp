@@ -5,7 +5,7 @@
 //	return staticDefaultMaterial;
 //}
 
-bool operator==(const Material& lhs, const Material& rhs) {
+bool operator==(const Material& lhs, const Material& rhs) noexcept {
 	return lhs.color == rhs.color &&
 		lhs.ambient == rhs.ambient &&
 		lhs.diffuse == rhs.diffuse &&

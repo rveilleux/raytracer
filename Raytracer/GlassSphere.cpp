@@ -1,7 +1,7 @@
 #include "GlassSphere.h"
 #include "Material.h"
 
-Sphere GlassSphere(MaterialManager& materialManager) {
+Sphere GlassSphere(MaterialManager& materialManager) noexcept {
 	Sphere s;
 	Material* m = materialManager.CreateMaterial();
 	s.SetMaterial(m);

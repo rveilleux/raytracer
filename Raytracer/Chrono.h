@@ -3,8 +3,8 @@
 
 class Chrono {
 public:
-	Chrono();
-	double GetElapsedTime() const;
+	Chrono() noexcept;
+	double GetElapsedTime() const noexcept;
 private:
 	const std::chrono::time_point<std::chrono::system_clock> _start;
 };

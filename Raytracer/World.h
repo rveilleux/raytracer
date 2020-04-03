@@ -4,14 +4,14 @@
 
 class World {
 public:
-	World();
+	World() noexcept;
 	static World Default();
 
-	int GetObjectCount() const { return _objects.size(); }
-	PointLight* GetLightSource() const { return _light.get(); }
-	void SetLightSource(std::unique_ptr<PointLight>&& light) { _light = std::move(light); }
+	int GetObjectCount() const noexcept { return _objects.size(); }
+	PointLight* GetLightSource() const noexcept { return _light.get(); }
+	void SetLightSource(std::unique_ptr<PointLight>&& light) noexcept { _light = std::move(light); }
 	Shape* AddObject(std::unique_ptr<Shape>&& object);
-	Shape* GetObject(int index) const { return _objects[index].get(); }
+	Shape* GetObject(int index) const noexcept { return _objects[index].get(); }
 	Intersections Intersect(const Ray& ray) const;
 	std::optional<Intersection> GetIntersectHit(const Ray& ray) const;
 	Color ShadeHit(const TComputations& comps, int remainingRecursion = 1) const;
@@ -20,7 +20,7 @@ public:
 	Color ReflectedColor(const TComputations& comps, int remainingRecursion = 1) const;
 	
 	Material* CreateMaterial() { return _materialManager.CreateMaterial(); }
-	Material* GetDefaultMaterial() const { return _materialManager.GetDefaultMaterial(); }
+	Material* GetDefaultMaterial() const noexcept { return _materialManager.GetDefaultMaterial(); }
 
 private:
 	std::unique_ptr<PointLight> _light;

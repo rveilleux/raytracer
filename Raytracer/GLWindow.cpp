@@ -17,17 +17,17 @@ public:
 	~GLInternal();
 
 	void SetRenderCallback(const GLWindow::TRenderCallBackFunc& func);
-	Canvas& GetCanvas();
+	Canvas& GetCanvas() noexcept;
 
 	void display();
-	void reshape_window(GLsizei w, GLsizei h);
-	void setupTexture();
+	void reshape_window(GLsizei w, GLsizei h) noexcept;
+	void setupTexture() noexcept;
 	void updateTexture();
-	void keyboardDown(unsigned char key, int /*x*/, int /*y*/);
-	void keyboardUp(unsigned char key, int x, int y);
-	void specialKeys(int key, int /*x*/, int /*y*/);
-	void mouse(int /*button*/, int /*state*/, int /*x*/, int /*y*/);
-	void passiveMotion(int x, int y);
+	void keyboardDown(unsigned char key, int /*x*/, int /*y*/) noexcept;
+	void keyboardUp(unsigned char key, int x, int y) noexcept;
+	void specialKeys(int key, int /*x*/, int /*y*/) noexcept;
+	void mouse(int /*button*/, int /*state*/, int /*x*/, int /*y*/) noexcept;
+	void passiveMotion(int x, int y) noexcept;
 private:
 	int _width;
 	int _height;
@@ -53,9 +53,9 @@ private:
 
 	double _speed = 0.1;
 
-	void ComputeCameraPosition();
+	void ComputeCameraPosition() noexcept;
 	void RenderCanvasToScreenData();
-	void OnKeyboardMove(unsigned char key, double direction);
+	void OnKeyboardMove(unsigned char key, double direction) noexcept;
 };
 
 namespace GLGlobal {
@@ -65,34 +65,34 @@ namespace GLGlobal {
 		glInternal->display();
 	}
 
-	void reshape_window(GLsizei w, GLsizei h) {
+	void reshape_window(GLsizei w, GLsizei h) noexcept {
 		glInternal->reshape_window(w, h);
 	}
-	void setupTexture() {
+	void setupTexture() noexcept {
 		glInternal->setupTexture();
 	}
 	void updateTexture() {
 		glInternal->updateTexture();
 	}
-	void keyboardDown(unsigned char key, int x, int y) {
+	void keyboardDown(unsigned char key, int x, int y) noexcept {
 		glInternal->keyboardDown(key, x, y);
 	}
-	void keyboardUp(unsigned char key, int x, int y) {
+	void keyboardUp(unsigned char key, int x, int y) noexcept {
 		glInternal->keyboardUp(key, x, y);
 	}
-	void specialKeys(int key, int x, int y) {
+	void specialKeys(int key, int x, int y) noexcept {
 		glInternal->specialKeys(key, x, y);
 	}
-	void mouse(int button, int state, int x, int y) {
+	void mouse(int button, int state, int x, int y) noexcept {
 		glInternal->mouse(button, state, x, y);
 	}
-	void passiveMotion(int x, int y) {
+	void passiveMotion(int x, int y) noexcept {
 		glInternal->passiveMotion(x, y);
 	}
 };
 
 // Setup Texture
-void GLInternal::setupTexture() {
+void GLInternal::setupTexture() noexcept {
 	// Create a texture 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, _screenWidth, _screenHeight, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, (GLvoid*)_screenData.GetData());
 
@@ -110,12 +110,12 @@ void GLInternal::SetRenderCallback(const GLWindow::TRenderCallBackFunc& func) {
 	_renderFunc = func;
 }
 
-void GLInternal::ComputeCameraPosition() {
+void GLInternal::ComputeCameraPosition() noexcept {
 	_cameraFrom = _cameraFrom + _cameraForward * _forwardSpeed + _cameraStrafe * _strafeSpeed + _cameraUp * _upSpeed;
 }
 
 void GLInternal::RenderCanvasToScreenData() {
-	Point cameraTo = _cameraFrom + _cameraForward;
+	const Point cameraTo = _cameraFrom + _cameraForward;
 	_renderFunc(_cameraFrom, cameraTo, _cameraUp);
 	// Update pixels
 	uint8_t* writePtr = _screenData.GetData();
@@ -158,7 +158,7 @@ void GLInternal::display() {
 	glutSwapBuffers();
 }
 
-void GLInternal::reshape_window(GLsizei w, GLsizei h) {
+void GLInternal::reshape_window(GLsizei w, GLsizei h) noexcept {
 	glClearColor(0.0f, 0.0f, 0.5f, 0.0f);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -172,17 +172,17 @@ void GLInternal::reshape_window(GLsizei w, GLsizei h) {
 }
 
 /* Callback handler for normal-key event: when a key has been pressed */
-void GLInternal::keyboardDown(unsigned char key, int /*x*/, int /*y*/) {
+void GLInternal::keyboardDown(unsigned char key, int /*x*/, int /*y*/) noexcept {
 	OnKeyboardMove(key, 1);
 }
 
 /* Callback handler for normal-key event: when a key has been released */
-void GLInternal::keyboardUp(unsigned char key, int /*x*/, int /*y*/) {
+void GLInternal::keyboardUp(unsigned char key, int /*x*/, int /*y*/) noexcept {
 	OnKeyboardMove(key, -1);
 }
 
-void GLInternal::OnKeyboardMove(unsigned char key, double direction) {
-	double resultSpeed = _speed * direction;
+void GLInternal::OnKeyboardMove(unsigned char key, double direction) noexcept {
+	const double resultSpeed = _speed * direction;
 	switch (key) {
 	case 27:     // ESC key
 		//exit(0);
@@ -210,7 +210,7 @@ void GLInternal::OnKeyboardMove(unsigned char key, double direction) {
 }
 
 /* Callback handler for special-key event */
-void GLInternal::specialKeys(int key, int /*x*/, int /*y*/) {
+void GLInternal::specialKeys(int key, int /*x*/, int /*y*/) noexcept {
 	switch (key) {
 		//case GLUT_KEY_F1:    // F1: Toggle between full-screen and windowed mode
 		//	fullScreenMode = !fullScreenMode;         // Toggle state
@@ -234,17 +234,17 @@ void GLInternal::specialKeys(int key, int /*x*/, int /*y*/) {
 }
 
 /* Callback handler for mouse event */
-void GLInternal::mouse(int /*button*/, int /*state*/, int /*x*/, int /*y*/) {
+void GLInternal::mouse(int /*button*/, int /*state*/, int /*x*/, int /*y*/) noexcept {
 	//if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) { // Pause/resume
 	//}
 	//glutWarpPointer(320, 200);
 }
 
 /* Callback handler for mouse event */
-void GLInternal::passiveMotion(int x, int y) {
-	int dx = _displayWidth / 2 - x;
-	int dy = _displayHeight / 2 - y;
-	auto rotate = RotationY(-dx / 100.0) * RotationX(-dy / 100.0);
+void GLInternal::passiveMotion(int x, int y) noexcept {
+	const int dx = _displayWidth / 2 - x;
+	const int dy = _displayHeight / 2 - y;
+	const auto rotate = RotationY(-dx / 100.0) * RotationX(-dy / 100.0);
 	_cameraForward = rotate * Vector(0, 0, 1);
 	_cameraStrafe = rotate * Vector(1, 0, 0);
 	_cameraUp = rotate * Vector(0, 1, 0);
@@ -262,7 +262,7 @@ GLInternal::GLInternal(int width, int height)
 
 	_screenWidth = _width;
 	_screenHeight = _height;
-	int modifier = 2;
+	constexpr int modifier = 2;
 	_displayWidth = _screenWidth * modifier;
 	_displayHeight = _screenHeight * modifier;
 
@@ -293,7 +293,7 @@ GLInternal::~GLInternal() {
 	GLGlobal::glInternal = nullptr;
 }
 
-Canvas& GLInternal::GetCanvas() {
+Canvas& GLInternal::GetCanvas() noexcept {
 	return _image;
 }
 
@@ -305,7 +305,7 @@ GLWindow::GLWindow(int width, int height)
 GLWindow::~GLWindow() {
 }
 
-void GLWindow::StartMainLoop() {
+void GLWindow::StartMainLoop() noexcept {
 	glutMainLoop();
 }
 
@@ -313,6 +313,6 @@ void GLWindow::SetRenderCallback(const TRenderCallBackFunc& func) {
 	_impl->SetRenderCallback(func);
 }
 
-Canvas& GLWindow::GetCanvas() {
+Canvas& GLWindow::GetCanvas() noexcept {
 	return _impl->GetCanvas();
 }

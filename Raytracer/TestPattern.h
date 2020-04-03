@@ -3,7 +3,7 @@
 
 class TestPattern: public Pattern {
 public:
-	TestPattern() {};
+	TestPattern() = default;
 
-	Color PatternAt(const Point& p) const override;
+	Color PatternAt(const Point& p) const noexcept override;
 };

@@ -8,7 +8,7 @@ void PPMBase::Add(std::string&& st) {
 }
 
 namespace {
-	const int kMaxLineLength = 70 - 4;
+	constexpr int kMaxLineLength = 70 - 4;
 }
 
 PPM::PPM(int width, int height) {
@@ -47,7 +47,7 @@ PPMBinary::PPMBinary(int width, int height):
 	//_pixelData.reserve(width * height * 3);
 }
 
-void PPMBinary::AddPixel(const Color& c) {
+void PPMBinary::AddPixel(const Color& c) noexcept {
 	//_pixelData.push_back(Color::DoubleToByte(c.x));
 	//_pixelData.push_back(Color::DoubleToByte(c.y));
 	//_pixelData.push_back(Color::DoubleToByte(c.z));

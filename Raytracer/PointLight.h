@@ -4,15 +4,15 @@
 
 class PointLight {
 public:
-	PointLight(const Point& position, const Color& intensity)
+	PointLight(const Point& position, const Color& intensity) noexcept
 		: _intensity(intensity)
 		, _position(position)
 	{}
-	Color GetIntensity() const { return _intensity; }
-	Point GetPosition() const { return _position; }
-	void SetPosition(const Point& p) { _position = p; }
-	void SetIntensity(const Color& color) { _intensity = color; }
-	friend bool operator==(const PointLight& lhs, const PointLight& rhs);
+	Color GetIntensity() const noexcept { return _intensity; }
+	Point GetPosition() const noexcept { return _position; }
+	void SetPosition(const Point& p) noexcept { _position = p; }
+	void SetIntensity(const Color& color) noexcept { _intensity = color; }
+	friend bool operator==(const PointLight& lhs, const PointLight& rhs) noexcept;
 private:
 	Color _intensity;
 	Point _position;

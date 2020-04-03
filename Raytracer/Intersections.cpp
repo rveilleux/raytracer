@@ -1,5 +1,6 @@
 #include "Intersections.h"
 #include <algorithm>
+#pragma warning (disable: 26446)
 
 Intersections::Intersections(const TIntersections& vi) {
 	Add(vi);
@@ -20,7 +21,7 @@ Intersections::TIntersections Intersections::GetSorted() const {
 	return result;
 }
 
-std::optional<Intersection> Intersections::Hit() const {
+std::optional<Intersection> Intersections::Hit() const noexcept {
 	//const Intersection positive{ 0.0, nullptr };
 	//auto findSmallestNonNegative = _intersections.lower_bound(positive);
 	//if (findSmallestNonNegative == _intersections.end()) {

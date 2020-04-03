@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#pragma warning (disable: 26446)
 
 template<typename T>
 class Dynarray {
@@ -29,10 +30,10 @@ public:
 	//	delete[] _storage;
 	//}
 
-	const T& operator[](const int index) const { return _storage[index]; }
-	T& operator[](const int index) { return _storage[index]; }
-	T* GetData() const { return _storage.get(); }
-	int GetSize() const { return _size; }
+	const T& operator[](const int index) const noexcept { return _storage[index]; }
+	T& operator[](const int index) noexcept { return _storage[index]; }
+	T* GetData() const noexcept { return _storage.get(); }
+	int GetSize() const noexcept { return _size; }
 
 private:
 	int _size = 0;

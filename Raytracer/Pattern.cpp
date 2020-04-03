@@ -2,7 +2,7 @@
 #include "Shape.h"
 
 Color Pattern::PatternAtShape(const Shape* shape, const Point& p) const {
-	Point localPoint = shape->GetInverseTransform() * p;
-	Point patternPoint = GetInverseTransform() * localPoint;
+	const Point localPoint = shape->GetInverseTransform() * p;
+	const Point patternPoint = GetInverseTransform() * localPoint;
 	return PatternAt(patternPoint);
 }

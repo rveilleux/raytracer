@@ -7,7 +7,11 @@ UnitTest::UnitTest(const std::string_view& title) {
 }
 
 UnitTest::~UnitTest() {
-	std::cout << "Completed. Ran " << _countTest << " test(s)." << std::endl;
+	try {
+		std::cout << "Completed. Ran " << _countTest << " test(s)." << std::endl;
+	}
+	catch (...) {
+	}
 }
 
 #if _DEBUG

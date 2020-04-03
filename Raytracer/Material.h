@@ -13,14 +13,14 @@ struct Material {
 	double transparency = 0;
 	double refractiveIndex = 1;
 	std::unique_ptr<Pattern> pattern;
-	friend bool operator==(const Material& lhs, const Material& rhs);
+	friend bool operator==(const Material& lhs, const Material& rhs) noexcept;
 };
 
 class MaterialManager {
 public:
 	MaterialManager();
 	Material* CreateMaterial();
-	Material* GetDefaultMaterial() const { return _defaultMaterial; }
+	Material* GetDefaultMaterial() const noexcept { return _defaultMaterial; }
 private:
 	std::list<Material> _materials;
 	Material* _defaultMaterial;

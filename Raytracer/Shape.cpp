@@ -1,7 +1,7 @@
 #include "Shape.h"
 
 void Shape::Intersect(const Ray& ray, Intersections& outIntersections) const {
-	Ray localRay = ray.Transform(GetInverseTransform());
+	const Ray localRay = ray.Transform(GetInverseTransform());
 	LocalIntersect(localRay, outIntersections);
 }
 
@@ -12,19 +12,19 @@ Intersections Shape::Intersect(const Ray& ray) const {
 }
 
 std::optional<Intersection> Shape::FirstIntersect(const Ray& ray) const {
-	Ray localRay = ray.Transform(GetInverseTransform());
+	const Ray localRay = ray.Transform(GetInverseTransform());
 	return LocalFirstIntersect(localRay);
 }
 
 Vector Shape::NormalAt(const Point& p) const {
-	Point localPoint = GetInverseTransform() * p;
-	Vector localNormal = LocalNormalAt(localPoint);
+	const Point localPoint = GetInverseTransform() * p;
+	const Vector localNormal = LocalNormalAt(localPoint);
 	auto worldNormal = GetInverseTransform().Transpose() * localNormal;
 	worldNormal.w = 0;
 	return worldNormal.Normalize();
 }
 
-bool operator==(const Shape& lhs, const Shape& rhs) {
+bool operator==(const Shape& lhs, const Shape& rhs) noexcept {
 	return static_cast<const BaseTransform&>(lhs) == static_cast<const BaseTransform&>(rhs) &&
 		*lhs.GetMaterial() == *rhs.GetMaterial();
 }

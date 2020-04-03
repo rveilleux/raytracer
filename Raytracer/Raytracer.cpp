@@ -60,6 +60,9 @@
 static int GAllocCount = 0;
 static int GTotalAllocCount = 0;
 static int GDeepest = 0;
+
+#pragma warning (disable: 6387 28251 28252 28253 28196)
+
 void* operator new(size_t sz)
 {
 	void* m = malloc(sz);
@@ -110,16 +113,16 @@ public:
 		Vector wind;
 	};
 
-	static Projectile Tick(Environment env, Projectile proj) {
-		Point position = proj.position + proj.velocity;
-		Vector velocity = proj.velocity + env.gravity + env.wind;
+	static Projectile constexpr Tick(const Environment& env, const Projectile& proj) noexcept {
+		const Point position = proj.position + proj.velocity;
+		const Vector velocity = proj.velocity + env.gravity + env.wind;
 		return Projectile{ position, velocity };
 	}
 
 	static void GameTest() {
 		Canvas canvas(20, 20);
-		Projectile p{ Point(0,1,0), Vector(1,1,0).Normalize()*1.3 };
-		Environment e{ Vector(0, -0.1, 0), Vector(-0.01, 0, 0) };
+		const Environment e{ Vector(0, -0.1, 0), Vector(-0.01, 0, 0) };
+		Projectile p{ Point(0,1,0), Vector(1,1,0).Normalize() * 1.3 };
 		int countStep = 0;
 		do {
 			canvas.WritePixel(p.position.x, 19 - p.position.y, Color(255, 255, 0));
@@ -134,16 +137,16 @@ public:
 class Clock {
 public:
 	static void ClockTest() {
-		const int kSize = 100;
-		const double radius = 48;
-		const int nbTick = 12;
+		constexpr int kSize = 100;
+		constexpr double radius = 48;
+		constexpr int nbTick = 12;
 		Canvas canvas(kSize, kSize);
 
 		for (int i = 0; i < nbTick; i++) {
-			double angle = 2 * M_PI / nbTick * i;
-			Matrix<4, 4> transform = IdentityMatrix.RotationZ(angle).Scaling({ radius, radius, radius }).Translation({ kSize / 2, kSize / 2, 0 });
-			Point p(0, 1, 0);
-			Point r = transform * p;
+			const double angle = 2 * M_PI / nbTick * i;
+			const Matrix<4, 4> transform = IdentityMatrix.RotationZ(angle).Scaling({ radius, radius, radius }).Translation({ kSize / 2, kSize / 2, 0 });
+			const Point p(0, 1, 0);
+			const Point r = transform * p;
 			canvas.WritePixel(r.x, r.y, Color::White);
 		}
 		canvas.SaveToFile("test.ppm");
@@ -232,8 +235,8 @@ public:
 		world.SetLightSource(std::make_unique<PointLight>(Point(-10, 10, -10), Color(1, 1, 1)));
 
 #ifdef _DEBUG
-		const int kWidth = 80;
-		const int kHeight = 40;
+		constexpr int kWidth = 80;
+		constexpr int kHeight = 40;
 #else
 		const int kWidth = 320;
 		const int kHeight = 180;
@@ -276,9 +279,9 @@ int __cdecl main(int /*argc*/, char** /*argv*/) {
 	double average = 0;
 	constexpr int NBITER = 1;
 	for (int i = 0; i < NBITER; i++) {
-		Chrono start;
+		const Chrono start;
 		Render::Test();
-		double duration = start.GetElapsedTime();
+		const double duration = start.GetElapsedTime();
 		average += duration;
 		std::cout << "Duration = " << duration << std::endl;
 	}

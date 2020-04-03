@@ -9,7 +9,7 @@ Canvas::Canvas(int width, int height)
 {
 }
 
-bool Canvas::AllPixelColorAre(const Color& c) const {
+bool Canvas::AllPixelColorAre(const Color& c) const noexcept {
 	//for (const auto& pix: _pix) {
 	for (int i = 0; i < _width * _height; i++) {
 		const auto& pix = _pix[i];
@@ -18,7 +18,7 @@ bool Canvas::AllPixelColorAre(const Color& c) const {
 	return true;
 }
 
-void Canvas::SetAllPixels(const Color& c) {
+void Canvas::SetAllPixels(const Color& c) noexcept {
 	//for (auto& pix : _pix) {
 	for (int i = 0; i < _width * _height; i++) {
 		auto& pix = _pix[i];
@@ -26,12 +26,12 @@ void Canvas::SetAllPixels(const Color& c) {
 	}
 }
 
-void Canvas::WritePixel(int x, int y, const Color& c) {
+void Canvas::WritePixel(int x, int y, const Color& c) noexcept {
 	if (x < 0 || x >= _width || y < 0 || y >= _height) return;
 	WritePixelFast(x, y, c);
 }
 
-Color Canvas::PixelAt(int x, int y) const {
+Color Canvas::PixelAt(int x, int y) const noexcept {
 	if (x < 0 || x >= _width || y < 0 || y >= _height) return Color();
 	return _pix[x + y * _width];
 }

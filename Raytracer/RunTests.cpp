@@ -23,6 +23,8 @@
 #include "PerlinNoise.h"
 #include "GlassSphere.h"
 
+#pragma warning (push)
+#pragma warning (disable: 26496 26440 26486 26446 26429 26443 26432 26462)
 void TestTuple() {
 	UnitTest test("tuples");
 	DOTEST(test, "A tuple with w=1.0 is a point",
@@ -1219,3 +1221,4 @@ void RunTests() {
 	//	std::cout << p.GetValue({ 0,x,0 }) << std::endl;
 	//}
 }
+#pragma warning (pop)

@@ -3,4 +3,4 @@
 #include "Sphere.h"
 class MaterialManager;
 
-Sphere GlassSphere(MaterialManager& materialManager);
+Sphere GlassSphere(MaterialManager& materialManager) noexcept;

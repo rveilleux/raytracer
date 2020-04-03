@@ -6,7 +6,7 @@ StripePattern::StripePattern(const Color& c1, const Color& c2)
 {
 }
 
-Color StripePattern::PatternAt(const Point& p) const {
+Color StripePattern::PatternAt(const Point& p) const noexcept {
 	// Attempt at making fmod faster. Uncertain.
 	double t = p.x - 2 * std::round(p.x / 2);
 	//double t = std::fmod(p.x, 2);

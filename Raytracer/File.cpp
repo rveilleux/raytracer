@@ -16,16 +16,33 @@ public:
 	}
 
 	~FileInternal() {
-		_stream.close();
+		try {
+			_stream.close();
+		}
+		catch (...) {
+			_ASSERT_EXPR(false, L"Can't close stream");
+		}
 	}
+
+	FileInternal() = delete;
+	FileInternal(const FileInternal&) = delete;
+	FileInternal(FileInternal&&) = delete;
+	FileInternal& operator=(const FileInternal&) = delete;
+	FileInternal& operator=(FileInternal&&) = delete;
 
 	void WriteString(const std::string& string) {
 		_stream << string << std::endl;
 	}
 
+#pragma warning (push)
+#pragma warning (disable: 26490)
 	void SaveBytes(const TBytes& bytes) {
+		// There is no easy way to get rid of this ugly cast:
+		// changing to a basic_ofstream<uint8_t> would work but we'd lose the possibly
+		// of writing WriteString() to such stream.
 		_stream.write(reinterpret_cast<const char*>(bytes.GetData()), bytes.GetSize());
 	}
+#pragma warning (pop)
 
 private:
 	std::ofstream _stream;

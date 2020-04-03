@@ -13,12 +13,12 @@ public:
 	typedef std::vector<Intersection> TIntersections;
 	Intersections() = default;
 	explicit Intersections(const TIntersections& vi);
-	int GetCount() const { return _intersections.size(); }
-	bool IsEmpty() const { return _intersections.empty(); }
+	int GetCount() const noexcept { return _intersections.size(); }
+	bool IsEmpty() const noexcept { return _intersections.empty(); }
 	void Add(const Intersection& i);
 	//const Intersection& operator[](int index) const { return _intersections[index]; }
 	TIntersections GetSorted() const;
-	std::optional<Intersection> Hit() const;
+	std::optional<Intersection> Hit() const noexcept;
 private:
 	TIntersections _intersections;
 

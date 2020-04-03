@@ -3,6 +3,9 @@
 #include "Math.h"
 #include "Tuple.h"
 
+#pragma warning(push)
+#pragma warning(disable: 26482)
+#pragma warning(disable: 26446)
 template <int NR, int NC>
 class Matrix {
 public:
@@ -31,29 +34,29 @@ public:
 	//	_values[3][2] = d3;
 	//	_values[3][3] = d4;
 	//}
-	TRow& operator[](int index) { return _values[index]; }
-	const TRow& operator[](int index) const { return _values[index]; }
+	TRow& operator[](int index) noexcept { return _values[index]; }
+	constexpr const TRow& operator[](int index) const noexcept { return _values[index]; }
 	template<int R, int C>
-	double Get() const { return std::get<C>(std::get<R>(_values)); }
+	double Get() const noexcept { return std::get<C>(std::get<R>(_values)); }
 	template<int R, int C>
-	void Set(double value) { std::get<C>(std::get<R>(_values)) = value; }
+	void Set(double value) noexcept { std::get<C>(std::get<R>(_values)) = value; }
 	template<int R>
-	void SetRow(const TRow& row) { std::get<R>(_values) = row; }
+	void SetRow(const TRow& row) noexcept { std::get<R>(_values) = row; }
 	//void SetAll(const TMatrix& matrix) { _values = matrix; }
-	void SetAll(const TRow& r0, const TRow& r1) {
+	void SetAll(const TRow& r0, const TRow& r1) noexcept {
 		std::get<0>(_values) = r0;
 		std::get<1>(_values) = r1;
 	}
-	void SetAll(const TRow& r0, const TRow& r1, const TRow& r2) {
+	void SetAll(const TRow& r0, const TRow& r1, const TRow& r2) noexcept {
 		SetAll(r0, r1);
 		std::get<2>(_values) = r2;
 	}
-	void SetAll(const TRow& r0, const TRow& r1, const TRow& r2, const TRow& r3) {
+	void SetAll(const TRow& r0, const TRow& r1, const TRow& r2, const TRow& r3) noexcept {
 		SetAll(r0, r1, r2);
 		std::get<3>(_values) = r3;
 	}
-	Matrix<NR, NC> Transpose() const {
-		Matrix<NR, NC> result {
+	Matrix<NR, NC> Transpose() const noexcept {
+		const Matrix<NR, NC> result {
 			TRow{_values[0][0],_values[1][0],_values[2][0],_values[3][0]},
 			TRow{_values[0][1],_values[1][1],_values[2][1],_values[3][1]},
 			TRow{_values[0][2],_values[1][2],_values[2][2],_values[3][2]},
@@ -68,7 +71,7 @@ public:
 	}
 #pragma warning( push )
 #pragma warning(disable:4701)
-	Matrix<NR - 1, NC - 1> Submatrix(int removeR, int removeC) const {
+	Matrix<NR - 1, NC - 1> Submatrix(int removeR, int removeC) const noexcept {
 		Matrix<NR - 1, NC - 1> result;
 		int resultr = 0;
 		for (int r = 0; r < NR; r++) {
@@ -84,7 +87,7 @@ public:
 		return result;
 	}
 #pragma warning(pop)
-	double Determinant() const {
+	double Determinant() const noexcept {
 		if constexpr(NR == 2) {
 			return _values[0][0] * _values[1][1] - _values[0][1] * _values[1][0];
 		}
@@ -96,17 +99,17 @@ public:
 			return determinant;
 		}
 	}
-	double Minor(int removeR, int removeC) const {
+	double Minor(int removeR, int removeC) const noexcept {
 		return Submatrix(removeR, removeC).Determinant();
 	}
-	double Cofactor(int removeR, int removeC) const {
-		double minor = Minor(removeR, removeC);
+	double Cofactor(int removeR, int removeC) const noexcept {
+		const double minor = Minor(removeR, removeC);
 		return IsOdd(removeR + removeC) ? -minor : minor;
 	}
-	bool IsInvertible() const {
+	bool IsInvertible() const noexcept {
 		return !(almostEqual(Determinant(), 0));
 	}
-	bool ApproximatelyEqual(const Matrix<NR, NC>& rhs) const {
+	bool ApproximatelyEqual(const Matrix<NR, NC>& rhs) const noexcept {
 		for (int r = 0; r < NR; r++) {
 			for (int c = 0; c < NC; c++) {
 				if (!almostEqual(_values[r][c], rhs._values[r][c], 0.00001)) {
@@ -116,13 +119,13 @@ public:
 		}
 		return true;
 	}
-	friend bool operator==(const Matrix<NR, NC>& lhs, const Matrix<NR, NC>& rhs) {
+	friend bool operator==(const Matrix<NR, NC>& lhs, const Matrix<NR, NC>& rhs) noexcept {
 		return lhs.ApproximatelyEqual(rhs);
 	}
-	friend bool operator!=(const Matrix<NR, NC>& lhs, const Matrix<NR, NC>& rhs) {
+	friend bool operator!=(const Matrix<NR, NC>& lhs, const Matrix<NR, NC>& rhs) noexcept {
 		return !(lhs == rhs);
 	}
-	friend Matrix<NR, NC> operator*(const Matrix<NR, NC>& lhs, const Matrix<NR, NC>& rhs) {
+	friend Matrix<NR, NC> operator*(const Matrix<NR, NC>& lhs, const Matrix<NR, NC>& rhs) noexcept {
 		Matrix<NR, NC> result;
 		for (int r = 0; r < NR; r++) {
 			for (int c = 0; c < NC; c++) {
@@ -135,7 +138,7 @@ public:
 		}
 		return result;
 	}
-	Matrix<NR, NC> Inverse() const {
+	Matrix<NR, NC> Inverse() const noexcept {
 		_ASSERT_EXPR(IsInvertible(), L"Matrix is not invertible");
 		double determinant = Determinant();
 
@@ -148,7 +151,7 @@ public:
 		}
 		return result;
 	}
-	friend Tuple operator*(const Matrix<NR, NC>& lhs, const Tuple& rhs) {
+	friend Tuple operator*(const Matrix<NR, NC>& lhs, const Tuple& rhs) noexcept {
 		return Tuple{
 		lhs[0][0] * rhs.x + lhs[0][1] * rhs.y + lhs[0][2] * rhs.z + lhs[0][3] * rhs.w,
 		lhs[1][0] * rhs.x + lhs[1][1] * rhs.y + lhs[1][2] * rhs.z + lhs[1][3] * rhs.w,
@@ -156,12 +159,12 @@ public:
 		lhs[3][0] * rhs.x + lhs[3][1] * rhs.y + lhs[3][2] * rhs.z + lhs[3][3] * rhs.w
 		};
 	}
-	Matrix<4, 4> Translation(const Vector& v);
-	Matrix<4, 4> Scaling(const Vector& v);
-	Matrix<4, 4> RotationX(double r);
-	Matrix<4, 4> RotationY(double r);
-	Matrix<4, 4> RotationZ(double r);
-	Matrix<4, 4> Shearing(double xy, double xz, double yx, double yz, double zx, double zy);
+	Matrix<4, 4> Translation(const Vector& v) noexcept;
+	Matrix<4, 4> Scaling(const Vector& v) noexcept;
+	Matrix<4, 4> RotationX(double r) noexcept;
+	Matrix<4, 4> RotationY(double r) noexcept;
+	Matrix<4, 4> RotationZ(double r) noexcept;
+	Matrix<4, 4> Shearing(double xy, double xz, double yx, double yz, double zx, double zy) noexcept;
 
 	// Can't figure out how to initialize 'IdentityMatrix' if member is private
 //private:
@@ -174,7 +177,7 @@ typedef std::array<TRow, 4> TMatrix;
 //static TRow row{ 1,2,3,4 };
 static Matrix<4,4> IdentityMatrix{ TRow{1,0,0,0},TRow{0,1,0,0},TRow{0,0,1,0 }, TRow{ 0,0,0,1 } };
 
-inline Matrix<4, 4> Matrix<4, 4>::Translation(const Vector& v) {
+inline Matrix<4, 4> Matrix<4, 4>::Translation(const Vector& v) noexcept {
 	Matrix<4, 4> m = IdentityMatrix;
 	m.Set<0, 3>(v.x);
 	m.Set<1, 3>(v.y);
@@ -182,7 +185,7 @@ inline Matrix<4, 4> Matrix<4, 4>::Translation(const Vector& v) {
 	return m * (*this);
 }
 
-inline Matrix<4, 4> Matrix<4, 4>::Scaling(const Vector& v) {
+inline Matrix<4, 4> Matrix<4, 4>::Scaling(const Vector& v) noexcept {
 	Matrix<4, 4> m = IdentityMatrix;
 	m.Set<0, 0>(v.x);
 	m.Set<1, 1>(v.y);
@@ -190,10 +193,10 @@ inline Matrix<4, 4> Matrix<4, 4>::Scaling(const Vector& v) {
 	return m * (*this);
 }
 
-inline Matrix<4, 4> Matrix<4, 4>::RotationX(double r) {
+inline Matrix<4, 4> Matrix<4, 4>::RotationX(double r) noexcept {
 	Matrix<4, 4> m = IdentityMatrix;
-	double cos = std::cos(r);
-	double sin = std::sin(r);
+	const double cos = std::cos(r);
+	const double sin = std::sin(r);
 	m.Set<1, 1>(cos);
 	m.Set<1, 2>(-sin);
 	m.Set<2, 1>(sin);
@@ -201,10 +204,10 @@ inline Matrix<4, 4> Matrix<4, 4>::RotationX(double r) {
 	return m * (*this);
 }
 
-inline Matrix<4, 4> Matrix<4, 4>::RotationY(double r) {
+inline Matrix<4, 4> Matrix<4, 4>::RotationY(double r) noexcept {
 	Matrix<4, 4> m = IdentityMatrix;
-	double cos = std::cos(r);
-	double sin = std::sin(r);
+	const double cos = std::cos(r);
+	const double sin = std::sin(r);
 	m.Set<0, 0>(cos);
 	m.Set<0, 2>(sin);
 	m.Set<2, 0>(-sin);
@@ -212,10 +215,10 @@ inline Matrix<4, 4> Matrix<4, 4>::RotationY(double r) {
 	return m * (*this);
 }
 
-inline Matrix<4, 4> Matrix<4, 4>::RotationZ(double r) {
+inline Matrix<4, 4> Matrix<4, 4>::RotationZ(double r) noexcept {
 	Matrix<4, 4> m = IdentityMatrix;
-	double cos = std::cos(r);
-	double sin = std::sin(r);
+	const double cos = std::cos(r);
+	const double sin = std::sin(r);
 	m.Set<0, 0>(cos);
 	m.Set<0, 1>(-sin);
 	m.Set<1, 0>(sin);
@@ -223,7 +226,7 @@ inline Matrix<4, 4> Matrix<4, 4>::RotationZ(double r) {
 	return m * (*this);
 }
 
-inline Matrix<4, 4> Matrix<4, 4>::Shearing(double xy, double xz, double yx, double yz, double zx, double zy) {
+inline Matrix<4, 4> Matrix<4, 4>::Shearing(double xy, double xz, double yx, double yz, double zx, double zy) noexcept {
 	Matrix<4, 4> m = IdentityMatrix;
 	m.Set<0, 1>(xy);
 	m.Set<0, 2>(xz);
@@ -234,31 +237,31 @@ inline Matrix<4, 4> Matrix<4, 4>::Shearing(double xy, double xz, double yx, doub
 	return m * (*this);
 }
 
-inline Matrix<4, 4> Translation(const Vector& v) {
+inline Matrix<4, 4> Translation(const Vector& v) noexcept {
 	return IdentityMatrix.Translation(v);
 }
 
-inline Matrix<4, 4> Scaling(const Vector& v) {
+inline Matrix<4, 4> Scaling(const Vector& v) noexcept {
 	return IdentityMatrix.Scaling(v);
 }
 
-inline Matrix<4, 4> RotationX(double r) {
+inline Matrix<4, 4> RotationX(double r) noexcept {
 	return IdentityMatrix.RotationX(r);
 }
 
-inline Matrix<4, 4> RotationY(double r) {
+inline Matrix<4, 4> RotationY(double r) noexcept {
 	return IdentityMatrix.RotationY(r);
 }
 
-inline Matrix<4, 4> RotationZ(double r) {
+inline Matrix<4, 4> RotationZ(double r) noexcept {
 	return IdentityMatrix.RotationZ(r);
 }
 
-inline Matrix<4, 4> Shearing(double xy, double xz, double yx, double yz, double zx, double zy) {
+inline Matrix<4, 4> Shearing(double xy, double xz, double yx, double yz, double zx, double zy) noexcept {
 	return IdentityMatrix.Shearing(xy, xz, yx, yz, zx, zy);
 }
 
-Matrix<4, 4> ViewTransform(const Point& from, const Point& to, const Vector& up);
+Matrix<4, 4> ViewTransform(const Point& from, const Point& to, const Vector& up) noexcept;
 
 //struct TS {
 //private:
@@ -272,3 +275,5 @@ Matrix<4, 4> ViewTransform(const Point& from, const Point& to, const Vector& up)
 //static TS bla2{ TRow{2,4,3,4} };
 //static TMatrix _identity{ TRow{1,0,0,0},TRow{0,1,0,0},TRow{0,0,1,0 }, TRow{ 0,0,0,1 } };
 //static Matrix<4, 4> IdentityMatrix
+
+#pragma warning(pop)

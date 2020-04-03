@@ -3,7 +3,7 @@
 #include "PointLight.h"
 #include "Lighting.h"
 
-World::World() {
+World::World() noexcept {
 }
 
 Shape* World::AddObject(std::unique_ptr<Shape>&& object) {
@@ -55,13 +55,13 @@ std::optional<Intersection> World::GetIntersectHit(const Ray& ray) const {
 }
 
 Color World::ShadeHit(const TComputations& comps, int remainingRecursion) const {
-	bool shadowed = IsShadowed(comps.overPoint);
-	Material* objectMat = comps.object->GetMaterial();
+	const bool shadowed = IsShadowed(comps.overPoint);
+	Material* const objectMat = comps.object->GetMaterial();
 	_ASSERT_EXPR(objectMat, L"Object must have a material to be renderable");
 	__analysis_assume(objectMat);
-	Color surface = Lighting(*objectMat, comps.object,
+	const Color surface = Lighting(*objectMat, comps.object,
 		*GetLightSource(), comps.point, comps.eyev, comps.normalv, shadowed);
-	Color reflected = ReflectedColor(comps, remainingRecursion);
+	const Color reflected = ReflectedColor(comps, remainingRecursion);
 	return surface + reflected;
 }
 
@@ -75,11 +75,11 @@ Color World::ColorAt(const Ray& ray, int remainingRecursion) const {
 }
 
 bool World::IsShadowed(const Point& point) const {
-	Point lightp = GetLightSource()->GetPosition();
-	Vector light2point = point - lightp;
-	double distance = light2point.Magnitude();
-	Vector lightdir = light2point.Normalize();
-	Ray r = Ray(lightp, lightdir);
+	const Point lightp = GetLightSource()->GetPosition();
+	const Vector light2point = point - lightp;
+	const double distance = light2point.Magnitude();
+	const Vector lightdir = light2point.Normalize();
+	const Ray r = Ray(lightp, lightdir);
 	const auto& hit = GetIntersectHit(r);
 	if (hit && hit->t < distance) {
 		return true;
@@ -98,7 +98,7 @@ Color World::ReflectedColor(const TComputations& comps, int remainingRecursion) 
 	if (almostEqual(objectMat->reflective, 0)) {
 		return Color::Black;
 	}
-	Ray ray = Ray(comps.overPoint, comps.reflectv);
-	Color reflectColor = ColorAt(ray, remainingRecursion - 1);
+	const Ray ray = Ray(comps.overPoint, comps.reflectv);
+	const Color reflectColor = ColorAt(ray, remainingRecursion - 1);
 	return reflectColor * objectMat->reflective;
 }
