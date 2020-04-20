@@ -54,8 +54,10 @@ Canvas Camera::Render(const World& w, int maxRecursion) const {
 	return image;
 }
 
+constexpr bool MULTITHREAD_RENDERING = true;
+
 void Camera::Render(const World& w, int maxRecursion, Canvas& image) const {
-	{
+	if (MULTITHREAD_RENDERING) {
 		ThreadList threads;
 		const int nbLinesPerThread = std::max((_vsize + threads.GetCount() - 1) / threads.GetCount(), 1);
 
@@ -71,11 +73,11 @@ void Camera::Render(const World& w, int maxRecursion, Canvas& image) const {
 			end += nbLinesPerThread;
 		}
 	}
-
-	//for (int y = 0; y < _vsize; y++) {
-	//	RenderLine(w, image, y, maxRecursion);
-	//}
-
+	else {
+		for (int y = 0; y < _vsize; y++) {
+			RenderLine(w, image, y, maxRecursion);
+		}
+	}
 	//std::cout << "Camera::Render: finished." << std::endl;
 }
 
