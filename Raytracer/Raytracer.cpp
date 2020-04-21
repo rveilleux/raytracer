@@ -53,7 +53,7 @@
 //                   Average duration = 264.915 ms (World::GetIntersectHit to only keep 'best first hit')
 // Debug 100x50: Average duration = 461.826 ms
 
-#define DEBUG_ALLOC
+//#define DEBUG_ALLOC
 
 #ifdef DEBUG_ALLOC
 // Overloading Global new operator
