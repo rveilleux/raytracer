@@ -802,7 +802,7 @@ void TestIntersection() {
 	double n2[] = { 1.5, 2.0, 2.5, 2.5, 1.5, 1.0 };
 	for (int i = 0; i < 6; i++) {
 		auto comps = PrepareComputations(sorted[i], r, xs);
-		result = result && comps.n1 == n1[i] && comps.n2 == n2[i];
+		result = result && comps.n.n1 == n1[i] && comps.n.n2 == n2[i];
 	}
 	return result;
 		});

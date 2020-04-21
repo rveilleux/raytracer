@@ -1,5 +1,6 @@
 #include "Shape.h"
 
+
 void Shape::Intersect(const Ray& ray, Intersections& outIntersections) const {
 	const Ray localRay = ray.Transform(GetInverseTransform());
 	LocalIntersect(localRay, outIntersections);
@@ -27,6 +28,29 @@ Vector Shape::NormalAt(const Point& p) const {
 bool operator==(const Shape& lhs, const Shape& rhs) noexcept {
 	return static_cast<const BaseTransform&>(lhs) == static_cast<const BaseTransform&>(rhs) &&
 		*lhs.GetMaterial() == *rhs.GetMaterial();
+}
+
+TComputations::TComputations(const Intersection& intersection, const Ray& ray, const Intersections& intersections)
+	: t(intersection.t)
+	, object(intersection.object)
+	, point(ray.Position(t))
+	, eyev(-ray.direction)
+	, originalNormalv(object->NormalAt(point))
+	, inside(originalNormalv.Dot(eyev) < 0)
+	, normalv(inside ? -originalNormalv : originalNormalv)
+	, overPoint(point + normalv * myEpsilon)
+	, reflectv(ray.direction.Reflect(this->normalv))
+	, n(ComputeSomething(intersections))
+{
+}
+
+TComputations::N TComputations::ComputeSomething(const Intersections& intersections) const {
+	N result{ 0, 0 };
+	const auto& sortedIntersections = intersections.GetSorted();
+	for (const auto& intersection : sortedIntersections) {
+
+	}
+	return result;
 }
 
 TComputations PrepareComputations(const Intersection& intersection, const Ray& ray) {

@@ -66,11 +66,18 @@ Color World::ShadeHit(const TComputations& comps, int remainingRecursion) const 
 }
 
 Color World::ColorAt(const Ray& ray, int remainingRecursion) const {
-	const auto& hit = GetIntersectHit(ray);
+	// This was the 'fast version', before handling transparency: Only first hit was considered.
+	//const auto& hit = GetIntersectHit(ray);
+	//if (!hit) {
+	//	return Color();
+	//}
+	//const auto& comps = PrepareComputations(hit.value(), ray);
+	const auto& xs = Intersect(ray);
+	const auto& hit = xs.Hit();
 	if (!hit) {
 		return Color();
 	}
-	const auto& comps = PrepareComputations(hit.value(), ray);
+	const auto& comps = PrepareComputations(hit.value(), ray, xs);
 	return ShadeHit(comps, remainingRecursion);
 }
 

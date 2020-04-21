@@ -8,10 +8,10 @@ public:
 	Thread() = delete;
 	Thread(const Thread&) noexcept;
 	Thread(Thread&&) = default;
-	Thread(const std::function<void(void)>& func);
 	Thread& operator=(const Thread&) = delete;
 	Thread& operator=(Thread&&) = delete;
 	~Thread();
+	explicit Thread(const std::function<void(void)>& func);
 private:
 	std::thread _thread;
 };
