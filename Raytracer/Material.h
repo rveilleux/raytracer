@@ -1,6 +1,7 @@
 #pragma once
 #include "Color.h"
 #include "Pattern.h"
+#include <memory>
 #include <list>
 
 struct Material {
